@@ -1,0 +1,9 @@
+84.8.113.107.sslip.io {
+    handle /stream.mp3* {
+        reverse_proxy icecast:8000
+    }
+
+    handle {
+        reverse_proxy backend:8080
+    }
+}

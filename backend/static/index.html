@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GHAMMAS BALADI // Central Broadcast Radio</title>
+  <!-- Inline SVG Favicon (Eliminates GET /favicon.ico 404 logs) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234a2611'/%3E%3Ccircle cx='32' cy='32' r='18' fill='%23eab308'/%3E%3Ccircle cx='32' cy='32' r='7' fill='%231c1917'/%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --wood-mid: #6b3819;
+      --leather-mid: #2c1a10;
+      --amber-arc: #eab308;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+    }
+
+    /* Warm Architectural Acoustic Studio Wall Background */
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      background-color: #241c17;
+      background-image:
+        radial-gradient(ellipse at 50% 18%, rgba(255, 224, 178, 0.14) 0%, rgba(18, 13, 10, 0.85) 75%),
+        repeating-linear-gradient(
+          90deg,
+          rgba(0, 0, 0, 0.28) 0px,
+          rgba(0, 0, 0, 0.28) 14px,
+          rgba(255, 255, 255, 0.025) 14px,
+          rgba(255, 255, 255, 0.025) 28px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.015) 0px,
+          rgba(255, 255, 255, 0.015) 2px,
+          transparent 2px,
+          transparent 8px
+        );
+      color: #f3efe6;
+    }
+
+    /* Subtle Studio Header Plaque */
+    .studio-plaque {
+      margin-bottom: 14px;
+      padding: 6px 18px;
+      background: linear-gradient(180deg, #3a2e25 0%, #241c16 100%);
+      border: 1px solid #574638;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #d6c7b2;
+    }
+
+    .pilot-lamp {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #4b382a;
+      border: 1px solid #1a120c;
+      transition: background 0.2s;
+    }
+
+    .pilot-lamp.on {
+      background: #f59e0b;
+      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.7);
+    }
+
+    /* Main Vintage Radio Cabinet */
+    .radio-cabinet {
+      position: relative;
+      width: 100%;
+      max-width: 820px;
+      border-radius: 16px;
+      background: #1a120d;
+      border: 3px solid #3c281b;
+      box-shadow:
+        0 30px 60px rgba(0, 0, 0, 0.8),
+        0 8px 18px rgba(0, 0, 0, 0.65),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      overflow: hidden;
+    }
+
+    /* Compact Non-Blocking Tune-In Prompt (Radio stays 100% visible) */
+    .tune-prompt {
+      position: absolute;
+      top: 26px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      padding: 9px 20px;
+      background: linear-gradient(180deg, #facc15 0%, #ca8a04 100%);
+      border: 2px solid #291806;
+      border-radius: 6px;
+      color: #1c1917;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 1.4px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.75);
+      cursor: pointer;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+
+    .tune-prompt:hover {
+      transform: translateX(-50%) scale(1.03);
+    }
+
+    .tune-prompt.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Vintage HQ Admin PIN Modal */
+    .pin-modal {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      background: rgba(18, 11, 7, 0.86);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pin-modal.open {
+      display: flex;
+    }
+
+    .pin-card {
+      background: #24160e;
+      border: 2px solid #b5892e;
+      border-radius: 10px;
+      padding: 20px 24px;
+      width: 295px;
+      text-align: center;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85);
+    }
+
+    .pin-input {
+      width: 100%;
+      margin: 12px 0 8px;
+      padding: 9px;
+      background: #120b07;
+      border: 1px solid #6b472b;
+      border-radius: 5px;
+      color: #facc15;
+      font-family: 'Consolas', monospace;
+      font-size: 16px;
+      text-align: center;
+      letter-spacing: 3px;
+      outline: none;
+      user-select: text;
+    }
+
+    .pin-input:focus {
+      border-color: #eab308;
+    }
+
+    /* Top Brushed Metal Bezel + Glass Tuner Scale */
+    .tuner-housing {
+      background: linear-gradient(180deg, #383c42 0%, #1d2024 100%);
+      padding: 16px 20px 14px;
+      border-bottom: 2px solid #111316;
+    }
+
+    .glass-dial {
+      position: relative;
+      background: linear-gradient(180deg, #cfcbc2 0%, #eae6de 45%, #d6d1c7 100%);
+      border: 3px solid #181a1d;
+      border-radius: 6px;
+      padding: 10px 16px 12px;
+      box-shadow:
+        inset 0 4px 12px rgba(0, 0, 0, 0.45),
+        0 1px 0 rgba(255, 255, 255, 0.18);
+      overflow: hidden;
+    }
+
+    .glass-dial::after {
+      content: "";
+      position: absolute;
+      top: -40%;
+      left: -10%;
+      width: 55%;
+      height: 200%;
+      background: linear-gradient(105deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.04) 60%, transparent 61%);
+      pointer-events: none;
+    }
+
+    .freq-numbers {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Georgia', serif;
+      font-weight: 700;
+      font-size: 13px;
+      color: #292524;
+      padding: 0 4px;
+    }
+
+    .tick-ruler {
+      height: 16px;
+      margin: 4px 0;
+      background-image:
+        repeating-linear-gradient(90deg, #292524 0px, #292524 2px, transparent 2px, transparent 10%),
+        repeating-linear-gradient(90deg, #57534e 0px, #57534e 1px, transparent 1px, transparent 2%);
+      background-size: 100% 14px, 100% 8px;
+      background-position: left bottom, left bottom;
+      background-repeat: no-repeat;
+      position: relative;
+    }
+
+    .tuning-needle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 38%;
+      width: 3px;
+      background: #b91c1c;
+      box-shadow: 1px 0 2px rgba(0, 0, 0, 0.35);
+      transition: left 0.6s ease;
+    }
+
+    .dial-readout-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(41, 37, 36, 0.2);
+      font-size: 12px;
+      color: #1c1917;
+      font-weight: 700;
+    }
+
+    .track-marquee {
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 13px;
+      color: #1c1917;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 72%;
+    }
+
+    .branch-badge {
+      background: #292524;
+      color: #f5f5f4;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    /* Middle Walnut Woodgrain Faceplate */
+    .wood-panel {
+      background-color: var(--wood-mid);
+      background-image:
+        repeating-linear-gradient(
+          90deg,
+          rgba(35, 16, 5, 0.26) 0px,
+          rgba(35, 16, 5, 0.08) 4px,
+          rgba(160, 92, 46, 0.14) 9px,
+          rgba(45, 22, 8, 0.22) 15px
+        ),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(0, 0, 0, 0.25) 100%);
+      padding: 22px 26px;
+      display: grid;
+      grid-template-columns: 165px 1fr 165px;
+      align-items: center;
+      gap: 18px;
+      border-top: 1px solid #9a5b32;
+    }
+
+    @media (max-width: 680px) {
+      .wood-panel {
+        grid-template-columns: 1fr;
+        justify-items: center;
+      }
+    }
+
+    /* Old-School Brushed Metal Rotary Knob Assembly */
+    .knob-station {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .knob-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: #241106;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+
+    .knob-dial-wrap {
+      position: relative;
+      width: 126px;
+      height: 126px;
+      display: grid;
+      place-items: center;
+      cursor: ns-resize;
+    }
+
+    .knob-svg-ring {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .metal-knob {
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      background:
+        conic-gradient(
+          from 35deg,
+          #9ca3af 0deg,
+          #f3f4f6 45deg,
+          #6b7280 110deg,
+          #e5e7eb 180deg,
+          #4b5563 250deg,
+          #d1d5db 315deg,
+          #9ca3af 360deg
+        );
+      border: 3px solid #1f242b;
+      box-shadow:
+        0 6px 12px rgba(0, 0, 0, 0.65),
+        inset 0 1px 2px rgba(255, 255, 255, 0.8);
+      position: relative;
+      transform: rotate(0deg);
+      transition: transform 0.05s linear;
+    }
+
+    .metal-knob::after {
+      content: "";
+      position: absolute;
+      top: 9px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #18181b;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .knob-readout {
+      font-family: 'Consolas', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      background: #271307;
+      color: #f3e8d2;
+      padding: 2px 8px;
+      border-radius: 3px;
+      border: 1px solid #4a2611;
+    }
+
+    /* Center Tuner Thumbwheel & Mode Switch */
+    .center-console {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .thumbwheel-slot {
+      width: 100%;
+      max-width: 240px;
+      height: 36px;
+      background: #140b05;
+      border-radius: 18px;
+      padding: 4px;
+      border: 2px solid #3c200e;
+      box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .thumbwheel-ribs {
+      width: 92%;
+      height: 22px;
+      border-radius: 11px;
+      background:
+        linear-gradient(90deg, #090a0c 0%, #374151 25%, #6b7280 50%, #374151 75%, #090a0c 100%),
+        repeating-linear-gradient(90deg, transparent 0px, transparent 6px, rgba(0, 0, 0, 0.75) 6px, rgba(0, 0, 0, 0.75) 10px);
+      background-blend-mode: multiply;
+    }
+
+    .onair-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: #241207;
+      border: 1px solid #4a2611;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: #e7dccb;
+    }
+
+    .mode-rocker {
+      display: flex;
+      background: #241207;
+      border: 2px solid #3c200e;
+      border-radius: 5px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .rocker-tab {
+      background: transparent;
+      border: none;
+      color: #c7b299;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .rocker-tab.active {
+      background: #eab308;
+      color: #1c1917;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    /* Brass Divider Bar */
+    .brass-molding {
+      height: 12px;
+      background: linear-gradient(180deg, #d4a843 0%, #8f681c 55%, #593e0c 100%);
+      border-top: 1px solid #f3d078;
+      border-bottom: 1px solid #2b1d05;
+    }
+
+    /* Lower Stitched Dark Leather Deck */
+    .leather-deck {
+      background-color: var(--leather-mid);
+      background-image:
+        radial-gradient(rgba(0, 0, 0, 0.45) 1px, transparent 0),
+        radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0),
+        linear-gradient(180deg, #27160c 0%, #170c06 100%);
+      background-size: 6px 6px, 6px 6px, 100% 100%;
+      background-position: 0 0, 3px 3px, 0 0;
+      padding: 20px 26px 24px;
+      position: relative;
+    }
+
+    .leather-deck::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px dashed rgba(214, 178, 134, 0.25);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    /* Dual Analog VU Meters */
+    .vu-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+
+    @media (max-width: 600px) {
+      .vu-row { grid-template-columns: 1fr; }
+    }
+
+    .vu-bezel {
+      background: #e7e5e4;
+      border: 4px solid #a8a29e;
+      border-radius: 8px;
+      padding: 6px;
+      box-shadow:
+        0 6px 14px rgba(0, 0, 0, 0.65),
+        inset 0 2px 6px rgba(0, 0, 0, 0.35);
+    }
+
+    .vu-face {
+      background: linear-gradient(180deg, #faf8f5 0%, #e5e0d8 100%);
+      border: 1px solid #78716c;
+      border-radius: 4px;
+      height: 112px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vu-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* HQ Studio Console Drawer (Mode B) */
+    .hq-drawer {
+      display: none;
+      background: #231710;
+      border: 1px solid #573c28;
+      border-radius: 8px;
+      padding: 16px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hq-drawer.active { display: block; }
+
+    .hq-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .btn-vintage {
+      background: linear-gradient(180deg, #e7e2d8 0%, #c7bfb0 100%);
+      border: 1px solid #29211b;
+      color: #1c1917;
+      padding: 7px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-vintage.amber {
+      background: linear-gradient(180deg, #facc15 0%, #ca8a04 100%);
+      border-color: #422006;
+    }
+
+    .playlist-box {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .playlist-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #170f0a;
+      border: 1px solid #3f2b1d;
+      padding: 7px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #efe6d8;
+    }
+
+    .row-btns button {
+      background: #332217;
+      border: 1px solid #5c3e2b;
+      color: #f3e8d2;
+      padding: 2px 7px;
+      border-radius: 3px;
+      margin-left: 4px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .status-footer {
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #a89988;
+      padding: 0 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="studio-plaque">
+    <span class="pilot-lamp on" id="wsLamp"></span>
+    <span>GHAMMAS BALADI // CENTRAL BROADCAST RADIO</span>
+    <span id="toastBanner" style="color:#eab308;font-weight:700;"></span>
+  </div>
+
+  <div class="radio-cabinet">
+    <!-- Compact Floating Tune-In Prompt (Disappears in 0ms on click, keeps radio 100% visible) -->
+    <button class="tune-prompt" id="tuneOverlay" onclick="unlockAndPlay()">
+      ▶ CLICK ANYWHERE TO TUNE IN LIVE
+    </button>
+
+    <!-- HQ Studio Admin PIN Gate -->
+    <div class="pin-modal" id="pinModal">
+      <div class="pin-card">
+        <div style="font-size:12px;font-weight:800;letter-spacing:1.5px;color:#eab308;">HQ STUDIO ACCESS</div>
+        <div style="font-size:11px;color:#c7b299;margin-top:4px;">Enter Central Admin PIN</div>
+        <input type="password" id="pinInput" class="pin-input" placeholder="••••••" onkeydown="if(event.key==='Enter') submitAdminPin()" />
+        <div id="pinError" style="font-size:11px;color:#fca5a5;min-height:16px;margin-bottom:8px;"></div>
+        <div style="display:flex;gap:8px;justify-content:center;">
+          <button class="btn-vintage" onclick="closePinModal()">CANCEL</button>
+          <button class="btn-vintage amber" onclick="submitAdminPin()">UNLOCK HQ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Glass Frequency Tuner & Track Display -->
+    <div class="tuner-housing">
+      <div class="glass-dial">
+        <div class="freq-numbers">
+          <span>88.00</span>
+          <span>92.00</span>
+          <span>94.00</span>
+          <span>98.00</span>
+          <span>102.00</span>
+          <span>106.00</span>
+          <span>108.00</span>
+        </div>
+        <div class="tick-ruler">
+          <div class="tuning-needle" id="tunerNeedle"></div>
+        </div>
+        <div class="dial-readout-row">
+          <div class="track-marquee" id="nowPlayingText">01. TUNING LIVE BROADCAST...</div>
+          <div class="branch-badge" id="branchCounter">0 BRANCHES ONLINE</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Middle Walnut Wood Faceplate with Old-School Rotary Knobs -->
+    <div class="wood-panel">
+      <!-- Left Knob: Local Branch Volume -->
+      <div class="knob-station">
+        <div class="knob-title">Volume</div>
+        <div class="knob-dial-wrap" id="volKnobWrap" title="Drag up/down or scroll to adjust Volume">
+          <svg class="knob-svg-ring" viewBox="0 0 126 126">
+            <g id="volTicks" stroke="#1f1108" stroke-width="1.5"></g>
+            <circle cx="63" cy="63" r="45" fill="none" stroke="rgba(25,12,4,0.45)" stroke-width="6"
+                    stroke-dasharray="212 283" stroke-dashoffset="-35" transform="rotate(90 63 63)" stroke-linecap="round"/>
+            <circle id="volArc" cx="63" cy="63" r="45" fill="none" stroke="#eab308" stroke-width="6"
+                    stroke-dasharray="180 283" stroke-dashoffset="-35" transform="rotate(90 63 63)" stroke-linecap="round"/>
+            <text x="58" y="13" font-size="10" font-weight="bold" fill="#241106">0</text>
+            <text x="6" y="67" font-size="10" font-weight="bold" fill="#241106">10</text>
+          </svg>
+          <div class="metal-knob" id="volKnobCap"></div>
+        </div>
+        <div class="knob-readout" id="volReadout">8.5 / 10</div>
+      </div>
+
+      <!-- Center Tuner Thumbwheel & Mode Switch -->
+      <div class="center-console">
+        <div class="knob-title">Tuner // Live Feed</div>
+        <div class="thumbwheel-slot">
+          <div class="thumbwheel-ribs"></div>
+        </div>
+
+        <div class="onair-badge">
+          <span class="pilot-lamp" id="audioLamp"></span>
+          <span id="onAirStatus">STANDBY</span>
+        </div>
+
+        <div class="mode-rocker">
+          <button class="rocker-tab active" id="btnModeA" onclick="switchMode('A')">A: BRANCH VU</button>
+          <button class="rocker-tab" id="btnModeB" onclick="switchMode('B')">B: HQ STUDIO</button>
+        </div>
+      </div>
+
+      <!-- Right Knob: Local Branch Bass EQ -->
+      <div class="knob-station">
+        <div class="knob-title">Bass Tone</div>
+        <div class="knob-dial-wrap" id="bassKnobWrap" title="Drag up/down or scroll to adjust Bass EQ">
+          <svg class="knob-svg-ring" viewBox="0 0 126 126">
+            <g id="bassTicks" stroke="#1f1108" stroke-width="1.5"></g>
+            <circle cx="63" cy="63" r="45" fill="none" stroke="rgba(25,12,4,0.45)" stroke-width="6"
+                    stroke-dasharray="212 283" stroke-dashoffset="-35" transform="rotate(90 63 63)" stroke-linecap="round"/>
+            <circle id="bassArc" cx="63" cy="63" r="45" fill="none" stroke="#eab308" stroke-width="6"
+                    stroke-dasharray="106 283" stroke-dashoffset="-35" transform="rotate(90 63 63)" stroke-linecap="round"/>
+            <text x="56" y="13" font-size="10" font-weight="bold" fill="#241106">0dB</text>
+            <text x="104" y="67" font-size="10" font-weight="bold" fill="#241106">+12</text>
+          </svg>
+          <div class="metal-knob" id="bassKnobCap"></div>
+        </div>
+        <div class="knob-readout" id="bassReadout">+3.0 dB</div>
+      </div>
+    </div>
+
+    <!-- Brass Molding Bar -->
+    <div class="brass-molding"></div>
+
+    <!-- Lower Stitched Dark Leather Deck -->
+    <div class="leather-deck">
+      <div class="vu-row" id="vuSection">
+        <div class="vu-bezel">
+          <div class="vu-face">
+            <svg class="vu-svg" viewBox="0 0 260 112">
+              <path d="M 35 82 Q 130 32 225 82" fill="none" stroke="#57534e" stroke-width="1.5"/>
+              <text x="130" y="54" text-anchor="middle" font-size="13" font-weight="bold" fill="#44403c">- L -</text>
+              <text x="42" y="96" font-size="11" font-weight="bold" fill="#44403c">10</text>
+              <text x="82" y="82" font-size="11" font-weight="bold" fill="#44403c">7</text>
+              <text x="126" y="75" font-size="11" font-weight="bold" fill="#44403c">5</text>
+              <text x="172" y="82" font-size="11" font-weight="bold" fill="#44403c">3</text>
+              <text x="210" y="96" font-size="11" font-weight="bold" fill="#b91c1c">0</text>
+              <line id="needleL" x1="130" y1="125" x2="62" y2="42" stroke="#292524" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="130" cy="112" r="14" fill="#292524"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="vu-bezel">
+          <div class="vu-face">
+            <svg class="vu-svg" viewBox="0 0 260 112">
+              <path d="M 35 82 Q 130 32 225 82" fill="none" stroke="#57534e" stroke-width="1.5"/>
+              <text x="130" y="54" text-anchor="middle" font-size="13" font-weight="bold" fill="#44403c">- R -</text>
+              <text x="42" y="96" font-size="11" font-weight="bold" fill="#44403c">10</text>
+              <text x="82" y="82" font-size="11" font-weight="bold" fill="#44403c">7</text>
+              <text x="126" y="75" font-size="11" font-weight="bold" fill="#44403c">5</text>
+              <text x="172" y="82" font-size="11" font-weight="bold" fill="#44403c">3</text>
+              <text x="210" y="96" font-size="11" font-weight="bold" fill="#b91c1c">0</text>
+              <line id="needleR" x1="130" y1="125" x2="62" y2="42" stroke="#292524" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="130" cy="112" r="14" fill="#292524"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- HQ Studio Console (Mode B) -->
+      <div class="hq-drawer" id="hqPanel">
+        <div class="hq-actions">
+          <label class="btn-vintage amber">
+            + UPLOAD MP3 TRACK
+            <input type="file" id="mp3Input" accept=".mp3,audio/mpeg" style="display:none;" onchange="uploadTrack(this)" />
+          </label>
+          <button class="btn-vintage" onclick="skipTrack()">⏭ SKIP CURRENT</button>
+          <button class="btn-vintage amber" onclick="forceSyncAll()"> FORCE SYNC ALL BRANCHES</button>
+        </div>
+        <ul class="playlist-box" id="trackList"></ul>
+      </div>
+
+      <div class="status-footer">
+        <span>ICECAST 128 KBPS MP3 // 24/7 CENTRAL STREAM</span>
+        <span>CDR GROUP — AL QUBTAN RESTAURANTS</span>
+      </div>
+    </div>
+  </div>
+
+  <audio id="radioAudio" preload="auto" crossorigin="anonymous"></audio>
+
+  <script>
+    // Works seamlessly both locally (:8080 -> :8000) and behind a cloud HTTPS reverse proxy (/stream.mp3)
+    const STREAM_BASE = window.location.port === "8080"
+      ? `${window.location.protocol}//${window.location.hostname}:8000/stream.mp3`
+      : `${window.location.origin}/stream.mp3`;
+
+    const audio = document.getElementById("radioAudio");
+    const tuneOverlay = document.getElementById("tuneOverlay");
+    const audioLamp = document.getElementById("audioLamp");
+    const onAirStatus = document.getElementById("onAirStatus");
+
+    let isPlaying = false;
+    let currentPlaylist = [];
+    let audioCtx, analyser, bassFilter, dataArray;
+    let masterVolume = 0.85;
+    let bassGainDb = 3.0;
+    let adminPin = sessionStorage.getItem("ghammas_admin_pin") || "";
+
+    function decodeHtml(str) {
+      const txt = document.createElement("textarea");
+      txt.innerHTML = str || "";
+      return txt.value;
+    }
+
+    function buildRadialTicks(groupId) {
+      const g = document.getElementById(groupId);
+      for (let i = 0; i <= 20; i++) {
+        const angle = -135 + (i * 270) / 20;
+        const rad = (angle - 90) * (Math.PI / 180);
+        const r1 = 52;
+        const r2 = i % 5 === 0 ? 59 : 56;
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", 63 + r1 * Math.cos(rad));
+        line.setAttribute("y1", 63 + r1 * Math.sin(rad));
+        line.setAttribute("x2", 63 + r2 * Math.cos(rad));
+        line.setAttribute("y2", 63 + r2 * Math.sin(rad));
+        g.appendChild(line);
+      }
+    }
+    buildRadialTicks("volTicks");
+    buildRadialTicks("bassTicks");
+
+    function setupRotaryKnob(wrapId, capId, arcId, initialNorm, onChange) {
+      const wrap = document.getElementById(wrapId);
+      const cap = document.getElementById(capId);
+      const arc = document.getElementById(arcId);
+      let norm = initialNorm;
+      let dragging = false;
+      let startY = 0;
+      let startNorm = norm;
+
+      function applyVisual(val) {
+        norm = Math.max(0, Math.min(1, val));
+        const deg = -135 + norm * 270;
+        cap.style.transform = `rotate(${deg}deg)`;
+        arc.setAttribute("stroke-dasharray", `${norm * 212} 283`);
+        onChange(norm);
+      }
+
+      wrap.addEventListener("pointerdown", (e) => {
+        dragging = true;
+        startY = e.clientY;
+        startNorm = norm;
+        wrap.setPointerCapture(e.pointerId);
+      });
+
+      wrap.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+        applyVisual(startNorm + (startY - e.clientY) / 140);
+      });
+
+      wrap.addEventListener("pointerup", () => { dragging = false; });
+
+      wrap.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        applyVisual(norm + (e.deltaY < 0 ? 0.05 : -0.05));
+      }, { passive: false });
+
+      applyVisual(norm);
+    }
+
+    // Left Knob: Local Volume
+    setupRotaryKnob("volKnobWrap", "volKnobCap", "volArc", 0.85, (norm) => {
+      masterVolume = norm;
+      audio.volume = masterVolume;
+      document.getElementById("volReadout").textContent = `${(norm * 10).toFixed(1)} / 10`;
+    });
+
+    // Right Knob: Local Bass Tone (-6 dB to +12 dB)
+    setupRotaryKnob("bassKnobWrap", "bassKnobCap", "bassArc", 0.50, (norm) => {
+      bassGainDb = -6 + norm * 18;
+      if (bassFilter) bassFilter.gain.value = bassGainDb;
+      const sign = bassGainDb >= 0 ? "+" : "";
+      document.getElementById("bassReadout").textContent = `${sign}${bassGainDb.toFixed(1)} dB`;
+    });
+
+    // Mode Switch with HQ Admin PIN Gate
+    function switchMode(mode) {
+      if (mode === "B" && !adminPin) {
+        document.getElementById("pinError").textContent = "";
+        document.getElementById("pinInput").value = "";
+        document.getElementById("pinModal").classList.add("open");
+        setTimeout(() => document.getElementById("pinInput").focus(), 50);
+        return;
+      }
+      document.getElementById("btnModeA").classList.toggle("active", mode === "A");
+      document.getElementById("btnModeB").classList.toggle("active", mode === "B");
+      document.getElementById("vuSection").style.display = mode === "A" ? "grid" : "none";
+      document.getElementById("hqPanel").classList.toggle("active", mode === "B");
+    }
+
+    function closePinModal() {
+      document.getElementById("pinModal").classList.remove("open");
+    }
+
+    async function submitAdminPin() {
+      const candidate = document.getElementById("pinInput").value.trim();
+      const resp = await fetch("/api/admin/verify", {
+        method: "POST",
+        headers: { "X-Admin-Pin": candidate }
+      });
+      if (resp.ok) {
+        adminPin = candidate;
+        sessionStorage.setItem("ghammas_admin_pin", candidate);
+        closePinModal();
+        switchMode("B");
+        showToast("HQ STUDIO UNLOCKED");
+      } else {
+        document.getElementById("pinError").textContent = "Incorrect Admin PIN";
+      }
+    }
+
+    function handleAuthError(resp) {
+      if (resp.status === 401) {
+        adminPin = "";
+        sessionStorage.removeItem("ghammas_admin_pin");
+        switchMode("A");
+        showToast("SESSION EXPIRED — RE-ENTER PIN");
+        return true;
+      }
+      return false;
+    }
+
+    function markOnAir(toastMsg = "") {
+      isPlaying = true;
+      tuneOverlay.classList.add("hidden");
+      audioLamp.classList.add("on");
+      onAirStatus.textContent = "ON AIR // LIVE";
+      initAudioGraph();
+      if (toastMsg) showToast(toastMsg);
+    }
+
+    // Connect stream once on load and try immediate unmuted autoplay
+    async function bootRadio() {
+      audio.src = `${STREAM_BASE}?t=${Date.now()}`;
+      audio.volume = masterVolume;
+
+      audio.addEventListener("canplay", () => {
+        if (!isPlaying) {
+          tuneOverlay.textContent = "▶ LIVE SIGNAL READY — CLICK TO LISTEN";
+        }
+      }, { once: true });
+
+      try {
+        await audio.play();
+        markOnAir("AUTO-TUNED LIVE");
+      } catch (err) {
+        // Browser blocked unmuted autoplay -> buffer warms silently in background
+        audio.load();
+      }
+    }
+
+    // Instant 0ms UI response on click while stream locks in
+    async function unlockAndPlay() {
+      if (isPlaying) return;
+      tuneOverlay.classList.add("hidden");
+      onAirStatus.textContent = "TUNING SIGNAL...";
+      document.getElementById("tunerNeedle").style.left = "68%";
+
+      try {
+        await audio.play();
+        markOnAir("ON AIR");
+      } catch (e) {
+        audio.src = `${STREAM_BASE}?t=${Date.now()}`;
+        await audio.play();
+        markOnAir("ON AIR");
+      }
+    }
+
+    // Clicking anywhere on the radio cabinet tunes in on first visit
+    document.querySelector(".radio-cabinet").addEventListener("click", (e) => {
+      if (!isPlaying && !e.target.closest("#pinModal")) {
+        unlockAndPlay();
+      }
+    });
+
+    function showToast(msg) {
+      const el = document.getElementById("toastBanner");
+      el.textContent = `[ ${msg} ]`;
+      setTimeout(() => { if (el.textContent === `[ ${msg} ]`) el.textContent = ""; }, 3500);
+    }
+
+    // Watchdog: Auto-reconnects if Wi-Fi drops while ON AIR
+    setInterval(() => {
+      if (!isPlaying) return;
+      if (audio.paused || audio.error) {
+        audio.src = `${STREAM_BASE}?t=${Date.now()}`;
+        audio.play().then(() => showToast("RECONNECTED")).catch(() => {});
+      }
+    }, 1000);
+
+    // WebSocket Control & Metadata Connection
+    function connectWS() {
+      const wsProto = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const ws = new WebSocket(`${wsProto}//${window.location.host}/ws`);
+      ws.onopen = () => document.getElementById("wsLamp").classList.add("on");
+      ws.onclose = () => {
+        document.getElementById("wsLamp").classList.remove("on");
+        setTimeout(connectWS, 2000);
+      };
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === "STATE") {
+          const cleanTitle = decodeHtml(data.now_playing).toUpperCase();
+          document.getElementById("nowPlayingText").textContent = `01. ${cleanTitle}`;
+          document.getElementById("branchCounter").textContent = `${data.connected_branches} BRANCHES ONLINE`;
+          currentPlaylist = data.playlist || [];
+          renderPlaylist();
+          const pos = 20 + (cleanTitle.length % 60);
+          document.getElementById("tunerNeedle").style.left = `${pos}%`;
+        } else if (data.type === "FORCE_SYNC" && isPlaying) {
+          audio.src = `${STREAM_BASE}?t=${Date.now()}`;
+          audio.play().then(() => showToast("HQ SYNC EXECUTED")).catch(() => {});
+        }
+      };
+    }
+    connectWS();
+
+    // HQ Studio Playlist Controls (Protected by X-Admin-Pin)
+    function renderPlaylist() {
+      const list = document.getElementById("trackList");
+      list.innerHTML = "";
+      currentPlaylist.forEach((track, idx) => {
+        const li = document.createElement("li");
+        li.className = "playlist-row";
+        li.innerHTML = `
+          <span><strong style="color:#eab308;margin-right:8px;">0${idx + 1}</strong> ${track}</span>
+          <div class="row-btns">
+            <button onclick="moveTrack(${idx}, -1)">▲</button>
+            <button onclick="moveTrack(${idx}, 1)">▼</button>
+            <button onclick="deleteTrack('${track}')" style="color:#fca5a5;">✕</button>
+          </div>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    async function uploadTrack(input) {
+      if (!input.files.length) return;
+      const form = new FormData();
+      form.append("file", input.files[0]);
+      const resp = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "X-Admin-Pin": adminPin },
+        body: form
+      });
+      handleAuthError(resp);
+      input.value = "";
+    }
+
+    async function moveTrack(index, dir) {
+      const target = index + dir;
+      if (target < 0 || target >= currentPlaylist.length) return;
+      const copy = [...currentPlaylist];
+      [copy[index], copy[target]] = [copy[target], copy[index]];
+      const resp = await fetch("/api/playlist/reorder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Admin-Pin": adminPin
+        },
+        body: JSON.stringify({ tracks: copy })
+      });
+      handleAuthError(resp);
+    }
+
+    async function deleteTrack(name) {
+      const resp = await fetch(`/api/playlist/${encodeURIComponent(name)}`, {
+        method: "DELETE",
+        headers: { "X-Admin-Pin": adminPin }
+      });
+      handleAuthError(resp);
+    }
+
+    async function skipTrack() {
+      const resp = await fetch("/api/control/skip", {
+        method: "POST",
+        headers: { "X-Admin-Pin": adminPin }
+      });
+      handleAuthError(resp);
+    }
+
+    async function forceSyncAll() {
+      const resp = await fetch("/api/control/sync", {
+        method: "POST",
+        headers: { "X-Admin-Pin": adminPin }
+      });
+      if (!handleAuthError(resp)) {
+        showToast("SYNC SENT TO ALL BRANCHES");
+      }
+    }
+
+    // Web Audio API Graph: Source -> Bass Low-Shelf EQ -> Analyser -> Speakers
+    function initAudioGraph() {
+      if (audioCtx) {
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        return;
+      }
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const src = audioCtx.createMediaElementSource(audio);
+
+        bassFilter = audioCtx.createBiquadFilter();
+        bassFilter.type = "lowshelf";
+        bassFilter.frequency.value = 180;
+        bassFilter.gain.value = bassGainDb;
+
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 128;
+
+        src.connect(bassFilter);
+        bassFilter.connect(analyser);
+        analyser.connect(audioCtx.destination);
+
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+      } catch (e) {
+        analyser = null;
+      }
+    }
+
+    const needleL = document.getElementById("needleL");
+    const needleR = document.getElementById("needleR");
+    let smoothL = 0;
+    let smoothR = 0;
+    let tick = 0;
+
+    function updateVUMeters() {
+      let targetL = 0;
+      let targetR = 0;
+
+      if (isPlaying && analyser) {
+        analyser.getByteFrequencyData(dataArray);
+        const lowAvg = dataArray.slice(0, 16).reduce((a, b) => a + b, 0) / 16;
+        const highAvg = dataArray.slice(16, 48).reduce((a, b) => a + b, 0) / 32;
+        targetL = Math.min(1, (lowAvg / 190) * (0.4 + masterVolume * 0.6));
+        targetR = Math.min(1, (highAvg / 170) * (0.4 + masterVolume * 0.6));
+      } else if (isPlaying) {
+        targetL = (0.45 + Math.sin(tick * 0.18) * 0.25) * masterVolume;
+        targetR = (0.42 + Math.cos(tick * 0.21) * 0.25) * masterVolume;
+      }
+
+      smoothL += (targetL - smoothL) * 0.28;
+      smoothR += (targetR - smoothR) * 0.28;
+
+      const angleL = (-42 + smoothL * 84) * (Math.PI / 180);
+      const angleR = (-42 + smoothR * 84) * (Math.PI / 180);
+      const pivotX = 130, pivotY = 125, len = 96;
+
+      needleL.setAttribute("x2", (pivotX + len * Math.sin(angleL)).toFixed(1));
+      needleL.setAttribute("y2", (pivotY - len * Math.cos(angleL)).toFixed(1));
+      needleR.setAttribute("x2", (pivotX + len * Math.sin(angleR)).toFixed(1));
+      needleR.setAttribute("y2", (pivotY - len * Math.cos(angleR)).toFixed(1));
+
+      tick++;
+      setTimeout(() => requestAnimationFrame(updateVUMeters), 33);
+    }
+    updateVUMeters();
+
+    window.addEventListener("load", bootRadio);
+  </script>
+</body>
+</html>

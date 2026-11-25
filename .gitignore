@@ -1,0 +1,17 @@
+# Secrets & environment variables
+.env
+.env.local
+.env.*.local
+
+# SSH keys & certificates
+*.key
+*.pem
+*.pub
+
+# Python & OS clutter
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.DS_Store
+Thumbs.db

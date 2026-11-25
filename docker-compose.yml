@@ -1,0 +1,68 @@
+services:
+  icecast:
+    image: pltnk/icecast2:latest
+    container_name: ghammas-icecast
+    user: icecast2
+    mem_limit: 128m
+    ports:
+      - "${ICECAST_PORT:-8000}:8000"
+    volumes:
+      - ./config/icecast.xml:/etc/icecast2/icecast.xml:ro
+    entrypoint: ["icecast2", "-c", "/etc/icecast2/icecast.xml"]
+    restart: unless-stopped
+    
+  liquidsoap:
+    image: savonet/liquidsoap:v2.2.5
+    container_name: ghammas-liquidsoap
+    mem_limit: 300m
+    depends_on:
+      - icecast
+    environment:
+      - ICECAST_SOURCE_PASSWORD=${ICECAST_SOURCE_PASSWORD}
+    ports:
+      - "${LIQUIDSOAP_TELNET_PORT:-1234}:1234"
+    volumes:
+      - ./config/radio.liq:/etc/liquidsoap/radio.liq:ro
+      - ./music:/music
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        sed "s|__SOURCE_PASS__|$$ICECAST_SOURCE_PASSWORD|g" /etc/liquidsoap/radio.liq > /tmp/radio.liq
+        exec liquidsoap /tmp/radio.liq
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    container_name: ghammas-backend
+    mem_limit: 256m
+    depends_on:
+      - icecast
+      - liquidsoap
+    env_file:
+      - .env
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    volumes:
+      - ./music:/music
+      - ./backend:/app
+    restart: unless-stopped
+    
+  caddy:
+    image: caddy:2-alpine
+    container_name: ghammas-caddy
+    mem_limit: 96m
+    depends_on:
+      - backend
+      - icecast
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
