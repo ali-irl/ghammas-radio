@@ -1015,6 +1015,14 @@
         list.appendChild(li);
       });
     }
+    async function deleteTrack(index) {
+  const name = currentPlaylist[index];
+  if (!name) return;
+  await fetch(`/api/playlist/${encodeURIComponent(name)}`, {
+    method: "DELETE",
+    headers: { "X-Admin-Pin": adminPin }
+  });
+}
 
     async function uploadTrack(input) {
       if (!input.files.length) return;
