@@ -991,14 +991,23 @@
           document.getElementById("tunerNeedle").style.left = `${pos}%`;
         } else if (data.type === "FORCE_SYNC" && isPlaying) {
           audio.src = `${STREAM_BASE}?t=${Date.now()}`;
-          audio.play().then(() => showToast("HQ SYNC EXECUTED")).catch(() => {});
+          audio.play().catch(() => {});
+          showToast("HQ GLOBAL SYNC EXECUTED");
+          setTimeout(() => {
+            try {
+              if (audio.buffered.length > 0) {
+                const tip = audio.buffered.end(audio.buffered.length - 1);
+                if (tip > 0.25) audio.currentTime = tip - 0.15;
+              }
+            } catch (e) {}
+          }, 1200);
         }
       };
     }
     connectWS();
 
     // HQ Studio Playlist Controls (Protected by X-Admin-Pin)
-    function renderPlaylist() {
+   function renderPlaylist() {
       const list = document.getElementById("trackList");
       list.innerHTML = "";
       currentPlaylist.forEach((track, idx) => {
@@ -1009,20 +1018,12 @@
           <div class="row-btns">
             <button onclick="moveTrack(${idx}, -1)">▲</button>
             <button onclick="moveTrack(${idx}, 1)">▼</button>
-            <button onclick="deleteTrack('${track}')" style="color:#fca5a5;">✕</button>
+            <button onclick="deleteTrack(${idx})" style="color:#fca5a5;">✕</button>
           </div>
         `;
         list.appendChild(li);
       });
     }
-    async function deleteTrack(index) {
-  const name = currentPlaylist[index];
-  if (!name) return;
-  await fetch(`/api/playlist/${encodeURIComponent(name)}`, {
-    method: "DELETE",
-    headers: { "X-Admin-Pin": adminPin }
-  });
-}
 
     async function uploadTrack(input) {
       if (!input.files.length) return;
@@ -1053,14 +1054,15 @@
       handleAuthError(resp);
     }
 
-    async function deleteTrack(name) {
+    async function deleteTrack(index) {
+      const name = currentPlaylist[index];
+      if (!name) return;
       const resp = await fetch(`/api/playlist/${encodeURIComponent(name)}`, {
         method: "DELETE",
         headers: { "X-Admin-Pin": adminPin }
       });
       handleAuthError(resp);
     }
-
     async function skipTrack() {
       const resp = await fetch("/api/control/skip", {
         method: "POST",
